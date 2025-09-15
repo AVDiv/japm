@@ -44,6 +44,8 @@ pub enum ChildSignal {
 
 pub struct ChildProcess {
     pub command: String,
+    pub pid: u32,
+    pub user: String,
     pub spawn_time: DateTime<Local>,
     pub status: ChildProcessStatus,
     pub exit_code: Option<i16>,
