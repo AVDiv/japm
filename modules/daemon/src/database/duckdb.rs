@@ -27,7 +27,7 @@ impl BaseDatabaseManager for DuckDBManager {
     }
     fn disconnect(self) {
         if let Some(conn) = self.connection {
-            conn.close();
+            let _ = conn.close();
         } else {
             // Non-existent connection situation
             eprintln!("Attempting to close non-existent connection.");
@@ -36,7 +36,7 @@ impl BaseDatabaseManager for DuckDBManager {
     fn initiate_schema(&self) {
         // Creation of schema if it doesn't exist
         if let Some(conn) = &self.connection {
-            conn.execute_batch(
+            let _ = conn.execute_batch(
                 "BEGIN;
                 CREATE TABLE IF NOT EXISTS process(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, pid INTEGER, user TEXT, spawn_time INTEGER, is_live BOOLEAN);
                 CREATE TABLE IF NOT EXISTS usage_metrics(id INTEGER, timestamp INTEGER, cpu_usage REAL, mem_usage REAL, status TEXT, thread_count INTEGER, PRIMARY KEY(id, timestamp));

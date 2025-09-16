@@ -27,7 +27,7 @@ impl BaseManagerTrait for StandardMacosManager {
     fn terminate_process(&self, identifier: &mut ProcessType, _signal: ChildSignal) {
         todo!();
     }
-    async fn spawn_manager_cycle(&self, pid: u32) -> JoinHandle<()> {
+    fn spawn_manager_cycle(&self, pid: u32) -> JoinHandle<()> {
         todo!();
     }
 }

@@ -58,7 +58,7 @@ impl BaseManagerTrait for StandardLinuxManager {
         }
     }
 
-    async fn spawn_manager_cycle(&self, pid: u32) -> JoinHandle<()> {
+    fn spawn_manager_cycle(&self, pid: u32) -> JoinHandle<()> {
         todo!();
     }
 }

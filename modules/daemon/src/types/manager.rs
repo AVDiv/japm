@@ -17,7 +17,7 @@ pub trait BaseManagerTrait {
     fn spawn_process(&self, command: String) -> Result<ChildProcess, String>; // For spawning processes on a command
     fn record_process_status(&self, pid: u32);
     fn terminate_process(&self, identifier: &mut ProcessType, signal: ChildSignal);
-    async fn spawn_manager_cycle(&self, pid: u32) -> JoinHandle<()>;
+    fn spawn_manager_cycle(&self, pid: u32) -> JoinHandle<()>;
 }
 
 pub enum ConcreteManager {
@@ -56,10 +56,10 @@ impl BaseManagerTrait for ConcreteManager {
         }
     }
 
-    async fn spawn_manager_cycle(&self, pid: u32) -> JoinHandle<()> {
+    fn spawn_manager_cycle(&self, pid: u32) -> JoinHandle<()> {
         match self {
-            ConcreteManager::LinuxStandard(mgr) => mgr.spawn_manager_cycle(pid).await,
-            ConcreteManager::MacosStandard(mgr) => mgr.spawn_manager_cycle(pid).await,
+            ConcreteManager::LinuxStandard(mgr) => mgr.spawn_manager_cycle(pid),
+            ConcreteManager::MacosStandard(mgr) => mgr.spawn_manager_cycle(pid),
         }
     }
 }
