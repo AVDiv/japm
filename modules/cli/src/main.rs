@@ -3,6 +3,10 @@ mod types;
 
 use clap::Parser;
 use japm_common::RestartPolicy;
+use japm_daemon::{
+    managers::daemon_supervisor::DaemonSupervisor,
+    types::manager::{ConcreteManager, ManagerInstanceTypes, create_manager},
+};
 use types::cli::{other::RestartPolicyCli, subcommands::SubcommandsType};
 
 #[derive(Debug, Parser)]
@@ -33,6 +37,14 @@ impl From<RestartPolicyCli> for RestartPolicy {
 #[tokio::main]
 async fn main() {
     let args = Args::parse();
+    let mut dmonsp = DaemonSupervisor::new();
+
+    // Initialize the manager
+    if let Ok(manager) = create_manager(ManagerInstanceTypes::LinuxStandard) {
+        dmonsp.instances.insert("standard".to_string(), manager);
+    } else {
+        eprintln!("Failed to initialize manager");
+    }
 
     match &args.command {
         // `start` command
@@ -41,13 +53,13 @@ async fn main() {
             command,
             restart,
         } => {
-            actions::commands::start_process(name, command, restart);
+            actions::commands::start_process(&dmonsp, name, command, restart);
         }
         SubcommandsType::Stop { id } => {
-            actions::commands::stop_process(id);
+            actions::commands::stop_process(&dmonsp, id);
         }
         SubcommandsType::List => {
-            actions::commands::list_processes();
+            actions::commands::list_processes(&dmonsp);
         }
     }
 }
