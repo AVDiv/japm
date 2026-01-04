@@ -1045,6 +1045,7 @@ dependencies = [
  "clap",
  "daemonize",
  "duckdb",
+ "japm_daemon",
  "thiserror 2.0.16",
  "tokio",
 ]

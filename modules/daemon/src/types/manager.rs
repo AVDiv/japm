@@ -1,3 +1,4 @@
+use chrono::{DateTime, Local};
 use std::env;
 use thiserror::Error;
 use tokio::task::JoinHandle;
@@ -14,10 +15,15 @@ pub enum ProcessType {
 
 pub trait BaseManagerTrait {
     fn create() -> Self; // For initiating the manager instance
-    fn spawn_process(&self, command: String) -> Result<ChildProcess, String>; // For spawning processes on a command
-    fn record_process_status(&self, pid: u32);
-    fn terminate_process(&self, identifier: &mut ProcessType, signal: ChildSignal);
-    fn spawn_manager_cycle(&self, pid: u32) -> JoinHandle<()>;
+    // Getters
+    fn get_children_count(&self) -> usize; // For getting the number of child processes
+    fn get_child_process_by_pid(&self, pid: u32) -> Option<&ChildProcess>; // For getting a child process by PID
+    fn get_manager_spawn_time(&self) -> DateTime<Local>; // For getting the spawn time of the manager
+    // Other utilities
+    fn spawn_process(&mut self, command: &String) -> Result<(u32, String), String>; // For spawning processes on a command
+    fn record_process_status(&self, pid: &u32);
+    fn terminate_process(&self, identifier: &mut ProcessType, signal: &ChildSignal);
+    fn spawn_manager_cycle(&self, pid: &u32) -> JoinHandle<()>;
 }
 
 pub enum ConcreteManager {
@@ -35,28 +41,50 @@ impl BaseManagerTrait for ConcreteManager {
     fn create() -> Self {
         panic!("Use create_manager(selection) to construct ConcreteManager");
     }
-    fn spawn_process(&self, command: String) -> Result<ChildProcess, String> {
+
+    fn get_children_count(&self) -> usize {
+        match self {
+            ConcreteManager::LinuxStandard(mgr) => mgr.get_children_count(),
+            ConcreteManager::MacosStandard(mgr) => mgr.get_children_count(),
+        }
+    }
+
+    fn get_child_process_by_pid(&self, pid: u32) -> Option<&ChildProcess> {
+        match self {
+            ConcreteManager::LinuxStandard(mgr) => mgr.get_child_process_by_pid(pid),
+            ConcreteManager::MacosStandard(mgr) => mgr.get_child_process_by_pid(pid),
+        }
+    }
+
+    fn get_manager_spawn_time(&self) -> DateTime<Local> {
+        match self {
+            ConcreteManager::LinuxStandard(mgr) => mgr.get_manager_spawn_time(),
+            ConcreteManager::MacosStandard(mgr) => mgr.get_manager_spawn_time(),
+        }
+    }
+
+    fn spawn_process(&mut self, command: &String) -> Result<(u32, String), String> {
         match self {
             ConcreteManager::LinuxStandard(mgr) => mgr.spawn_process(command),
             ConcreteManager::MacosStandard(mgr) => mgr.spawn_process(command),
         }
     }
 
-    fn record_process_status(&self, pid: u32) {
+    fn record_process_status(&self, pid: &u32) {
         match self {
             ConcreteManager::LinuxStandard(mgr) => mgr.record_process_status(pid),
             ConcreteManager::MacosStandard(mgr) => mgr.record_process_status(pid),
         }
     }
 
-    fn terminate_process(&self, identifier: &mut ProcessType, signal: ChildSignal) {
+    fn terminate_process(&self, identifier: &mut ProcessType, signal: &ChildSignal) {
         match self {
             ConcreteManager::LinuxStandard(mgr) => mgr.terminate_process(identifier, signal),
             ConcreteManager::MacosStandard(mgr) => mgr.terminate_process(identifier, signal),
         }
     }
 
-    fn spawn_manager_cycle(&self, pid: u32) -> JoinHandle<()> {
+    fn spawn_manager_cycle(&self, pid: &u32) -> JoinHandle<()> {
         match self {
             ConcreteManager::LinuxStandard(mgr) => mgr.spawn_manager_cycle(pid),
             ConcreteManager::MacosStandard(mgr) => mgr.spawn_manager_cycle(pid),

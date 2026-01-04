@@ -1,6 +1,7 @@
 use chrono::{DateTime, Local};
 use std::process::Child;
 
+#[derive(Clone)]
 pub enum ChildProcessStatus {
     Pending,
     Sleeping,
@@ -51,5 +52,3 @@ pub struct ChildProcess {
     pub exit_code: Option<i16>,
     pub process_instance: Option<Child>,
 }
-
-impl ChildProcess {}

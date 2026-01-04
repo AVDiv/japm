@@ -47,7 +47,7 @@ impl BaseDatabaseManager for DuckDBManager {
 
     fn add_process(
         &self,
-        name: String,
+        name: &String,
         timestamp: i64,
         pid: u32,
         user: String,
@@ -134,8 +134,8 @@ impl BaseDatabaseManager for DuckDBManager {
         timestamp: i64,
         cpu_usage: f32,
         memory_usage: f32,
-        status: String,
-        thread_count: i32,
+        status: &String,
+        thread_count: &i32,
     ) -> Result<(), String> {
         // Append process usage metrics
         if let Some(conn) = &self.connection {
