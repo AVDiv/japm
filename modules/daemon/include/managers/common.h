@@ -4,6 +4,7 @@
 #include <expected>
 #include <optional>
 #include <string>
+#include <map>
 
 enum ChildProcessStatus { Pending, Sleeping, Running, Exited };
 
@@ -17,15 +18,17 @@ struct ChildProcess {
 };
 
 class ProcessManager {
+protected:
+  std::map<uint32_t, ChildProcess> children;
+  time_t spawn_time;
 public:
   // Constructors & Destructors
   virtual ~ProcessManager() = default;
   // Getters
-  virtual uint16_t get_children() = 0;
+  virtual uint16_t get_children_count() = 0;
   virtual std::optional<ChildProcess> get_child_by_pid(uint32_t pid) = 0;
-  virtual time_t get_manager_spawn_time() = 0;
+  virtual time_t get_spawn_time() = 0;
   // Other Functions
-  std::expected<std::string, std::string>
-  spawn_process(std::string command) = 0;
+  virtual std::string spawn_process(std::string command) = 0;
   virtual void record_process_status(uint32_t pid) = 0;
 };
