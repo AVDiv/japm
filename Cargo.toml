@@ -24,6 +24,7 @@ daemonize = "0.5.0"
 duckdb = "1.4.0"
 thiserror = "2.0.16"
 tokio = { version = "1.47.1", features = ["rt", "rt-multi-thread", "time", "macros", "net", "process", "io-util"] }
+japm_daemon = { path = "modules/daemon" }
 
 [[bin]]
 name = "japm-daemon"
