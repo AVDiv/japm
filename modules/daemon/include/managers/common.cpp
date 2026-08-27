@@ -1,16 +1,15 @@
 #include <csignal>
 #include <cstdint>
 #include <ctime>
-#include <expected>
+#include <map>
 #include <optional>
 #include <string>
-#include <map>
 
 enum ChildProcessStatus { Pending, Sleeping, Running, Exited };
 
 struct ChildProcess {
   std::string command;
-  uint32_t pid;
+  pid_t pid;
   std::string user;
   time_t spawn_time;
   ChildProcessStatus status;
@@ -19,16 +18,21 @@ struct ChildProcess {
 
 class ProcessManager {
 protected:
-  std::map<uint32_t, ChildProcess> children;
+  std::map<pid_t, ChildProcess> children;
   time_t spawn_time;
+
 public:
   // Constructors & Destructors
   virtual ~ProcessManager() = default;
   // Getters
   virtual uint16_t get_children_count() = 0;
-  virtual std::optional<ChildProcess> get_child_by_pid(uint32_t pid) = 0;
+  virtual std::optional<ChildProcess *> get_child_by_pid(pid_t pid) = 0;
   virtual time_t get_spawn_time() = 0;
   // Other Functions
-  virtual std::string spawn_process(std::string command) = 0;
-  virtual void record_process_status(uint32_t pid) = 0;
+  virtual pid_t *spawn_process(std::string command) = 0;
+  virtual void record_process_status(pid_t pid) = 0;
+
+private:
+  // Internal functions
+  virtual void spawn_manager_cycle(pid_t pid) = 0;
 };
